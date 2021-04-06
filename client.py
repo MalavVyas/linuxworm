@@ -1,35 +1,59 @@
-# client.py
-import time, socket, sys
+import socket, select, string, sys
 
-print("\nWelcome to Chat Room\n")
-print("Initialising....\n")
-time.sleep(1)
+#Helper function (formatting)
+def display() :
+	you="\33[33m\33[1m"+" You: "+"\33[0m"
+	sys.stdout.write(you)
+	sys.stdout.flush()
 
-s = socket.socket()
-shost = socket.gethostname()
-ip = socket.gethostbyname(shost)
-print(shost, "(", ip, ")\n")
-host = input(str("Enter server address: "))
-name = input(str("\nEnter your name: "))
-port = 1234
-print("\nTrying to connect to ", host, "(", port, ")\n")
-time.sleep(1)
-s.connect((host, port))
-print("Connected...\n")
+def main():
 
-s.send(name.encode())
-s_name = s.recv(1024)
-s_name = s_name.decode()
-print(s_name, "has joined the chat room\nEnter [e] to exit chat room\n")
+    if len(sys.argv)<3:
+        print("error")
+    else:
+        host = sys.argv[1]
+        name = bytes(sys.argv[2], 'utf-8')
 
-while True:
-    message = s.recv(1024)
-    message = message.decode()
-    print(s_name, ":", message)
-    message = input(str("Me : "))
-    if message == "[e]":
-        message = "Left chat room!"
-        s.send(message.encode())
-        print("\n")
-        break
-    s.send(message.encode())
+    port = 5001
+    
+    #asks for user name
+    # name=raw_input("\33[34m\33[1m CREATING NEW ID:\n Enter username: \33[0m")
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(2)
+    
+    # connecting host
+    try :
+        s.connect((host, port))
+    except :
+        print("\33[31m\33[1m Can't connect to the server \33[0m")
+        sys.exit()
+
+    #if connected
+    s.send(name)
+    display()
+    while 1:
+        socket_list = [sys.stdin, s]
+        
+        # Get the list of sockets which are readable
+        rList, wList, error_list = select.select(socket_list , [], [])
+
+        
+        for sock in rList:
+            #incoming message from server
+            if sock == s:
+                data = str(sock.recv(4096))
+                if not data :
+                    print('\33[31m\33[1m \rDISCONNECTED!!\n \33[0m')
+                    sys.exit()
+                else :
+                    sys.stdout.write(data)
+                    display()
+        
+            #user entered a message
+            else :
+                msg=sys.stdin.readline()
+                s.send(bytes(msg, 'utf-8'))
+                display()
+
+if __name__ == "__main__":
+    main()
