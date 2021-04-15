@@ -1,20 +1,19 @@
 import socket, select, sys
 
-	#Function to send message to all connected clients
+#Function to send message to all connected clients
 def send_to_all (message, connected_list):
-		#Message not forwarded to server and sender itself
+	#Message not forwarded to server and sender itself
 	for i in range(1, connected_list.__len__()):
 		socket = connected_list[i]
 		if socket != server_socket:
-			try :
-				socket.send(str(message).encode('utf-8'))
-				# except :
-				# 	print("error in sending message")
-					# if connection not available
-					# socket.close()
-					# connected_list.remove(socket)
-			except:
-				print("error")
+			socket.send(str(message).encode('utf-8'))
+			# try :
+			# except :
+			# 	print("error in sending message")
+				# if connection not available
+				# socket.close()
+				# connected_list.remove(socket)
+
 if __name__ == "__main__":
 	name=""
 	banner = str.encode("Welcome to chat room. Enter 'tata' anytime to exit\n")
@@ -36,7 +35,7 @@ if __name__ == "__main__":
 	print("SERVER WORKING")
 
 	while 1:
-        # Get the list sockets which are ready to be read through select
+		# Get the list sockets which are ready to be read through select
 		rList,wList,error_sockets = select.select(connected_list,[],[])
 
 		for sock in rList:
@@ -49,7 +48,7 @@ if __name__ == "__main__":
 				record[addr]=""
 				#print "record and conn list ",record,connected_list
 
-                #if repeated username
+				#if repeated username
 				if name in record.values():
 					sockfd.send(b"Username already taken!")
 					del record[addr]
@@ -57,15 +56,14 @@ if __name__ == "__main__":
 					sockfd.close()
 					continue
 				else:
-                    #add name and address
+					#add name and address
 					record[addr]=name
 					print("Client (%s, %s) connected" % addr," [",record[addr],"]")
 					sockfd.send(banner)
 					print(str(name) + "Joined")
 					# send_to_all(sockfd, "\33[32m\33[1m\r "+str(name)+" joined the conversation \n\33[0m")
 
-                    #TODO: THIS IS WHERE DATA IS SENT
-
+			#TODO: THIS IS WHERE DATA IS SENT
 			#Some incoming message from a client
 			elif sock == sys.stdin:
 				input = str(sys.stdin.readline())
@@ -78,7 +76,7 @@ if __name__ == "__main__":
 				lenx = len(x)
 				if(x[0] == "list"):
 					print(record[0])
-				elif(x[0] == "exec$"):
+				elif(x[0] == "exec"):
 					for i in x:
 						instr = instr + i + " "
 					print(instr)
@@ -97,7 +95,7 @@ if __name__ == "__main__":
 					# data=data1[:data1.index("\n")]
 					#print "\ndata received: ",data
 
-                    #get addr of client sending the message
+					#get addr of client sending the message
 					i,p=sock.getpeername()
 					if data == b'tata\n':
 						msg="\r\33[1m"+"\33[31m "+str(record[(i,p)])+" left the conversation \33[0m\n"
@@ -110,10 +108,11 @@ if __name__ == "__main__":
 						continue
 
 					else:
-						msg="\r\33[1m"+"\33[35m "+str(record[(i,p)])+": "+"\33[0m"+data+"\n"
+						data2 = str(data)
+						msg="\r\33[1m"+"\33[35m "+str(record[(i,p)])+": "+"\33[0m"+data2+"\n"
 						# send_to_all(msg)
 						print(data)
-                #abrupt user exit
+				#abrupt user exit
 				except:
 					(i,p)=sock.getpeername()
 					send_to_all(sock, "\r\33[31m \33[1m"+ str(record[(i,p)])+" left the conversation unexpectedly\33[0m\n")

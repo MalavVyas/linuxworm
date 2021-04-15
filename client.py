@@ -44,9 +44,9 @@ def main():
 					print('DISCONNECTED!!')
 					sys.exit()
 				else :
-					resp = data.split(" ")
-					if(resp[0] == "exec"):
-						recv = resp[0].split("$")[1]
+					resp = data.split("$")
+					if(resp[0].strip() == "exec"):
+						recv = resp[1]
 						# for i in resp:
 						# 	if i[:3] != "exec":
 						print(recv)
