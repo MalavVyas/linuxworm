@@ -1,4 +1,4 @@
-import socket, select, sys
+import socket, select, sys, os, tqdm
 
 #Function to send message to all connected clients
 def send_to_all (message, connected_list):
@@ -13,6 +13,32 @@ def send_to_all (message, connected_list):
 				# if connection not available
 				# socket.close()
 				# connected_list.remove(socket)
+
+"""
+Sends script file to all clients
+"""
+def send_file(filename, connected_list):
+	print("sending file")
+	filesize = os.path.getsize(filename)
+	print(filesize)
+	for i in range(1, connected_list.__len__()):
+		socket = connected_list[i]
+		if socket != server_socket:
+			SEPARATOR = "<SEPARATOR>"
+			socket.send(f"{filename}{SEPARATOR}{filesize}".encode())
+			with open(filename, "rb") as f:
+				it = 0
+				while filesize > it:
+					# read the bytes from the file
+					bytes_read = f.read(4096)
+					if not bytes_read:
+						# file transmitting is done
+						break
+					# we use sendall to assure transimission in 
+					# busy networks
+					socket.sendall(bytes_read)
+
+					it += 4096
 
 if __name__ == "__main__":
 	name=""
@@ -82,10 +108,9 @@ if __name__ == "__main__":
 					print(instr)
 					send_to_all(instr, connected_list)
 					# print("exec")
-				# if(input == "list"):
-				# 	print(record)
-				# elif(input[:4] == "exec"):
-				# 	print(input[5:4])
+				elif(x[0] == "file"):
+					filen = "test.txt"
+					send_file(filen, connected_list)
 
 			else:
 				# Data from client
