@@ -1,4 +1,4 @@
-import socket, select, sys, os, tqdm
+import socket, select, sys, os, time
 
 #Function to send message to all connected clients
 def send_to_all (message, connected_list):
@@ -26,6 +26,7 @@ def send_file(filename, connected_list):
 		if socket != server_socket:
 			SEPARATOR = "<SEPARATOR>"
 			socket.send(f"{filename}{SEPARATOR}{filesize}".encode())
+			time.sleep(1)
 			with open(filename, "rb") as f:
 				it = 0
 				while filesize > it:
