@@ -52,7 +52,10 @@ def main():
 						print(recv)
 
 						#where client receives command
-						res = run_command(recv)
+						try: 
+							res = run_command(recv)
+						except: 
+							print("command failed")
 	
 						#send command
 						s.send(res)
