@@ -140,6 +140,14 @@ if __name__ == "__main__":
 						sock.close()
 						continue
 
+					elif not data: 
+						(i,p)=sock.getpeername()
+						# send_to_all(sock, "\r\33[31m \33[1m"+ str(record[(i,p)])+" left the conversation unexpectedly\33[0m\n")
+						print("Client (%s, %s) is offline (error)" % (i,p)," [",record[(i,p)],"]\n")
+						del record[(i,p)]
+						connected_list.remove(sock)
+						sock.close()
+
 					else:
 						#decodes message and prints response from client
 						data2 = data.decode('utf-8', "backslashreplace")
