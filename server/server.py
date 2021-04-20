@@ -101,6 +101,7 @@ if __name__ == "__main__":
 				x = input.split(" ")
 				print(x)
 				lenx = len(x)
+				#should be a switch statement
 				if(x[0] == "list"):
 					print(record)
 				elif(x[0] == "exec"):
@@ -110,8 +111,14 @@ if __name__ == "__main__":
 					send_to_all(instr, connected_list)
 					# print("exec")
 				elif(x[0] == "file"):
-					filen = "test.txt"
-					send_file(filen, connected_list)
+					# filen = "test.txt"
+					try:  
+						filen = x[1]
+						send_file(filen, connected_list)
+					except: 
+						print("invalid/empty file name")
+				
+
 
 			else:
 				# Data from client

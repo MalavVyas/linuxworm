@@ -1,6 +1,5 @@
 import socket, select, string, sys, os
 import subprocess
-import tqdm
 
 #Helper function (formatting)
 def display() :
