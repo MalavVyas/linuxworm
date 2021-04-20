@@ -56,6 +56,7 @@ def main():
 							res = run_command(recv)
 						except: 
 							print("command failed")
+							res = b"command failed"
 	
 						#send command
 						s.send(res)

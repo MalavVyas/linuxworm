@@ -14,6 +14,8 @@ def send_to_all (message, connected_list):
 				# socket.close()
 				# connected_list.remove(socket)
 
+
+
 """
 Sends script file to all clients
 """
@@ -42,6 +44,16 @@ def send_file(filename, connected_list):
 					it += 4096
 
 if __name__ == "__main__":
+
+
+	if len(sys.argv) < 2:
+		print("error")
+		print("usage: python server.py <server ip>")
+		exit(1)
+	else:
+		host_ip = sys.argv[1]
+
+	print("host ip is: " + host_ip)
 	name=""
 	banner = str.encode("Welcome to chat room. Enter 'tata' anytime to exit\n")
 	#dictionary to store address corresponding to username
@@ -51,9 +63,11 @@ if __name__ == "__main__":
 	buffer = 4096
 	port = 5001
 
+
+
 	server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	server_socket.bind(("10.84.69.123", port))
+	server_socket.bind((host_ip, port))
 	server_socket.listen(10) #listen atmost 10 connection at one time
 
 	# Add server socket to the list of readable connections
