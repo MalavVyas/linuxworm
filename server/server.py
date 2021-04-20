@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
 	server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	server_socket.bind(("localhost", port))
+	server_socket.bind(("10.84.69.123", port))
 	server_socket.listen(10) #listen atmost 10 connection at one time
 
 	# Add server socket to the list of readable connections
