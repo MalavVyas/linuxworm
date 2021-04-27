@@ -1,5 +1,7 @@
 import socket, select, sys, os, time
 
+
+
 #Function to send message to all connected clients
 def send_to_all (message, connected_list):
 	#Message not forwarded to server and sender itself
@@ -13,6 +15,7 @@ def send_to_all (message, connected_list):
 				# if connection not available
 				# socket.close()
 				# connected_list.remove(socket)
+
 
 
 
@@ -43,6 +46,8 @@ def send_file(filename, connected_list):
 
 					it += 4096
 
+
+
 if __name__ == "__main__":
 
 
@@ -58,6 +63,7 @@ if __name__ == "__main__":
 	banner = str.encode("Welcome to chat room. Enter 'tata' anytime to exit\n")
 	#dictionary to store address corresponding to username
 	record={}
+	users=[]
 	# List to keep track of socket descriptors
 	connected_list = [sys.stdin]
 	buffer = 4096
@@ -99,6 +105,7 @@ if __name__ == "__main__":
 				else:
 					#add name and address
 					record[addr]=name
+					users.append((addr, name))
 					print("Client (%s, %s) connected" % addr," [",record[addr],"]")
 					sockfd.send(banner)
 					print(str(name) + "Joined")
@@ -117,7 +124,10 @@ if __name__ == "__main__":
 				lenx = len(x)
 				#should be a switch statement
 				if(x[0] == "list"):
-					print(record)
+					for i in range (0, users.__len__()):
+						print("user number:", i,  "with info ", users[i])
+
+					# print(users)
 				elif(x[0] == "exec"):
 					for i in x:
 						instr = instr + i + " "
@@ -131,6 +141,34 @@ if __name__ == "__main__":
 						send_file(filen, connected_list)
 					except: 
 						print("invalid/empty file name")
+				
+				elif(x[0] == "ex"):
+					if x.__len__() < 2: 
+						print("error invalid usage\nusage: ex [host_num] $[command]")
+					else:
+						for i in x:
+							instr = instr + i + " "
+
+						p = False
+						try: 
+							host_num = int(x[1])
+							p = True
+						except: 
+							print("error: host_num not an int")
+							continue
+						
+						if(p): 
+							print(instr, "for host number: ", host_num)
+							
+							if(host_num >= users.__len__() or host_num < 0):
+								print("error no host exists for number: ", host_num)
+							else:
+								host_sock = connected_list[host_num+2]
+								if host_sock != server_socket:
+									host_sock.send(str(instr).encode('utf-8'))
+								else: 
+									print("error: server sock")
+
 				
 
 
@@ -149,7 +187,9 @@ if __name__ == "__main__":
 						print(data)
 						# send_to_all(sock,str.encode(msg))
 						print("Client (%s, %s) is offline" % (i,p)," [",record[(i,p)],"]")
+						name = record[(i,p)]
 						del record[(i,p)]
+						users.remove(((i,p), name))
 						connected_list.remove(sock)
 						sock.close()
 						continue
@@ -158,7 +198,9 @@ if __name__ == "__main__":
 						(i,p)=sock.getpeername()
 						# send_to_all(sock, "\r\33[31m \33[1m"+ str(record[(i,p)])+" left the conversation unexpectedly\33[0m\n")
 						print("Client (%s, %s) is offline (error)" % (i,p)," [",record[(i,p)],"]\n")
+						name = record[(i,p)]
 						del record[(i,p)]
+						users.remove(((i,p), name))
 						connected_list.remove(sock)
 						sock.close()
 
@@ -171,7 +213,9 @@ if __name__ == "__main__":
 					(i,p)=sock.getpeername()
 					send_to_all(sock, "\r\33[31m \33[1m"+ str(record[(i,p)])+" left the conversation unexpectedly\33[0m\n")
 					print("Client (%s, %s) is offline (error)" % (i,p)," [",record[(i,p)],"]\n")
+					name = record[(i,p)]
 					del record[(i,p)]
+					users.remove(((i,p), name))
 					connected_list.remove(sock)
 					sock.close()
 					continue
